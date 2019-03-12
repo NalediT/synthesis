@@ -34,10 +34,13 @@ let ofTime a b c =((a*3600) + (b*60) + (c*1))
     //failwith "Not implemented"
 
 let toTime x =
-    let hrs = x/3600
-    let min = (x%3600)*60
-    let sec = min*60
-    hrs,min,sec
+    match x <= 0 with 
+    |true -> 0,0,0
+    |_ ->
+        let hrs = x / 3600
+        let min = (x / 60) % 60
+        let sec = (x - hrs * 3600) % 60 
+        hrs,min,sec
 
     //failwith "Not implemented"
 
@@ -90,15 +93,75 @@ let month x =
     
     //failwith "Not implemented"
 
-let toBinary _ =
+let toBinary num = 
+    match num < 0 with 
+    |true -> failwith("Negative number is invalid")
+    |false -> 
+        match num=0 with 
+        |true -> "0"
+        |_ ->
+            let rec Count n result =
+                match n>0 with
+                |false -> result
+                |_ ->
+                    match n%2 with 
+                    |0 -> Count (n/2) ("0" + result)
+                    |_ -> Count (n/2) ("1" + result)
+            Count num ""  
 
-    failwith "Not implemented"
+   // failwith "Not implemented"
 
-let bizFuzz _ =
-    failwith "Not implemented"
+let bizFuzz num =
+    let rec div x (acc1, acc2, acc3) =
+        match num < x with
+        |true ->(acc1,acc2,acc3)
+        |false ->
+            match x%3=0 && x%5=0 with 
+            |true ->div (x+1) (acc1 + 1, acc2+1, acc3+1)
+            |false ->
+                match x%3=0 with 
+                |true -> div (x+1) (acc1+1,acc2,acc3)
+                |false ->
+                    match x%5=0 with 
+                    |true -> div (x+1) (acc1, acc2 + 1, acc3)
+                    |false -> div (x+1) (acc1 , acc2 , acc3)
+    match num < 1 with
+    |true -> (0,0,0)
+    |false -> div 1 (0,0,0)
+    
+    //failwith "Not implemented"
 
-let monthDay _ _ =
-    failwith "Not implemented"
+let monthDay d y =
+    match d > 0 && d <= 366 && y >= 1582 with
+    |false -> failwith "Entered invalid value"
+    |true ->
+        let rec monthFinder v m acc = 
+            let mon,day = month m 
+            match isLeap y = true with
+            |true ->
+                match mon = "February" with
+                |true ->
+                    match v > acc && v<= (acc+day+1) with
+                    |true -> mon
+                    |false -> monthFinder v (m+1) (acc+day+1)
+                |false ->
+                    match v > acc && v <= (acc + day) with 
+                    |true -> mon
+                    |false -> monthFinder v (m+1) (acc+day)
+            |false ->
+                match isLeap y = false && d < 366 with
+                |false -> failwith "Entered invalid value"
+                |true  ->
+                    match v > acc && v <= (acc+day)  with
+                    |true -> mon
+                    |false ->monthFinder v (m + 1) (acc + day)
+        let mon, day = month 1
+        match d > 0 && d <= day with 
+        |true -> "January"
+        |false ->
+            monthFinder d 2 31
+                    
+  //  failwith "Not implemented"
 
 let coord _ =
     failwith "Not implemented"
